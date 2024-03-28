@@ -11,7 +11,6 @@ resource "aws_vpc" "main" {
 }
 resource "aws_internet_gateway" "gw" {
   vpc_id = aws_vpc.main.id
-
   tags = merge(var.common_tags,var.igw_tags,{Name= local.name}
   )
 }
@@ -20,6 +19,7 @@ resource "aws_subnet" "public" {
   vpc_id     = aws_vpc.main.id
   cidr_block = var.public_subnets_cidr[count.index]
   availability_zone = local.az_name[count.index]
+  map_public_ip_on_launch = true
   tags = merge(var.common_tags,var.public_subnets_tags , 
   {
      Name = "${local.name}-public-${local.az_name[count.index]}"
@@ -48,6 +48,8 @@ resource "aws_subnet" "database" {
   }
   )
 }
+
+
 
 resource "aws_eip" "eip"{
   domain  = "vpc"
